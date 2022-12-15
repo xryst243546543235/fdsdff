@@ -19,7 +19,7 @@ app.config.update(dict(DATABASE=os.path.join(app.root_path, 'flask.db')))
 title = ['Flask', 'Как интересно', 'Ваши предложения', 'Химия', '']
 menu = [{'name': 'Главная', 'url': '/'}, {'name': 'Помощь', 'url': 'help'}, {'name': 'О приложении', 'url': 'about'},
         {'name': 'Таблица', 'url': 'table'}, {'name': 'Авторизация', 'url': 'login'},
-        {'name': 'Главная БД', 'url': 'index_bd'}]
+        {'name': 'Главная БД', 'url': '/db/index_db'}]
 
 
 def connect_db():
@@ -42,11 +42,31 @@ def close_db(error):
         g.link_db.close()
 
 
-@app.route('/index_bd')
-def index_bd():
+@app.route('/db/index_db')
+def index_db():
     db = get_db()
     db = FlaskDataBase(db)
-    return render_template('index_bd.html', menu=[])
+    return render_template('index_db.html', menu=db.getmenu())
+
+@app.route('/db/add_post',)
+def add_post():
+    db = get_db()
+    db = FlaskDataBase(db)
+    if request.method == "post":
+        if len(request.form['name']) > 3 and len(request.form['post']) < 2**00:
+            res = db.addPost(request.form['name'], request.form['post'],request.form['url'])
+            if not res :
+                flash('шибка добавлении статьи',category='error')
+            else:
+                flash('статья добавлена',category='success')
+        else:
+            flash('ошибка добавлении статьи' , category='error')
+
+    return render_template('addpost.html', menu=db.getmenu())
+
+
+
+
 
 
 @app.route('/index')
